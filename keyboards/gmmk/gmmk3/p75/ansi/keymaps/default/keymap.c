@@ -93,11 +93,11 @@ bool dip_switch_update_user(uint8_t index, bool active) {
 
     if (index == 0) {
         if (active){
-            layer_off(WIN_BL);
-            layer_on(MACOS_BL);
-        } else {
             layer_off(MACOS_BL);
             layer_on(WIN_BL);
+        } else {
+            layer_off(WIN_BL);
+            layer_on(MACOS_BL);
         }
     }
 

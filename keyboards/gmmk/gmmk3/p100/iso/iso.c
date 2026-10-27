@@ -16,6 +16,11 @@
 
 #include "quantum.h"
 
+// Unused matrix positions can read as pressed and must not trigger USB wakeup.
+const matrix_row_t matrix_mask[MATRIX_ROWS] = {
+    0b11111111, 0b11111111, 0b11110111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b11111111, 0b01011111, 0b01011111, 0b01111111,
+};
+
 #ifdef VIA_OPENRGB_HYBRID
 uint8_t is_orgb_mode = true; //Default value of the hybrid switch mode
 #endif

@@ -32,6 +32,10 @@
 #include "usb_driver.h"
 #include "usb_types.h"
 
+#ifdef VIA_OPENRGB_HYBRID
+#    include "via.h"
+#endif
+
 #ifdef NKRO_ENABLE
 #    include "keycode_config.h"
 
@@ -516,7 +520,11 @@ void console_task(void) {
 
 #ifdef RAW_ENABLE
 void raw_hid_send(uint8_t *data, uint8_t length) {
-    if (length != RAW_EPSIZE) {
+    if (length != RAW_EPSIZE
+#    ifdef VIA_OPENRGB_HYBRID
+        && length != VIA_RAW_EPSIZE
+#    endif
+    ) {
         return;
     }
     send_report(USB_ENDPOINT_IN_RAW, data, length);
@@ -530,9 +538,33 @@ __attribute__((weak)) void raw_hid_receive(uint8_t *data, uint8_t length) {
 
 void raw_hid_task(void) {
     uint8_t buffer[RAW_EPSIZE];
+#    ifdef VIA_OPENRGB_HYBRID
+    input_buffers_queue_t *queue = &usb_endpoints_out[USB_ENDPOINT_OUT_RAW].ibqueue;
+    while (true) {
+        osalSysLock();
+        if (ibqGetFullBufferTimeoutS(queue, TIME_IMMEDIATE) != MSG_OK) {
+            osalSysUnlock();
+            break;
+        }
+
+        // Read one USB packet, so short VIA messages are not dropped or merged.
+        size_t length = queue->top - queue->ptr;
+        bool   valid  = length == VIA_RAW_EPSIZE || length == RAW_EPSIZE;
+        if (valid) {
+            memcpy(buffer, queue->ptr, length);
+        }
+        ibqReleaseEmptyBufferS(queue);
+        osalSysUnlock();
+
+        if (valid) {
+            raw_hid_receive(buffer, length);
+        }
+    }
+#    else
     while (receive_report(USB_ENDPOINT_OUT_RAW, buffer, sizeof(buffer))) {
         raw_hid_receive(buffer, sizeof(buffer));
     }
+#    endif
 }
 
 #endif

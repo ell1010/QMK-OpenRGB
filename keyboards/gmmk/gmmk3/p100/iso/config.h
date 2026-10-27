@@ -16,6 +16,8 @@
 
 #pragma once
 
+#define MATRIX_MASKED
+
 /* Driver LED totals (different for each board)*/
 #define DRIVER_1_LED_TOTAL (67)
 #define DRIVER_2_LED_TOTAL (59)

@@ -18,6 +18,6 @@
 
  /* Driver LED totals (different for each board)*/
  #define DRIVER_1_LED_TOTAL (53)
- #define DRIVER_2_LED_TOTAL (32)
+ #define DRIVER_2_LED_TOTAL (33)
  #define RGB_MATRIX_LED_COUNT (DRIVER_1_LED_TOTAL + DRIVER_2_LED_TOTAL)
  #define DRIVER_LED_TOTAL (DRIVER_1_LED_TOTAL + DRIVER_2_LED_TOTAL)
